@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tangkap Koin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #111827;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px 0 10px;
+        }
+
+        #game {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            margin: 20px auto;
+            background: linear-gradient(#1e3a8a, #0f172a);
+            border: 3px solid white;
+            overflow: hidden;
+        }
+
+        #player {
+            position: absolute;
+            bottom: 20px;
+            left: 170px;
+            width: 60px;
+            height: 30px;
+            background: #22c55e;
+            border-radius: 10px;
+        }
+
+        #coin {
+            position: absolute;
+            top: -30px;
+            left: 100px;
+            width: 30px;
+            height: 30px;
+            background: gold;
+            border-radius: 50%;
+            box-shadow: 0 0 15px yellow;
+        }
+
+        #score {
+            font-size: 22px;
+            margin: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: #22c55e;
+            color: white;
+        }
+
+        button:hover {
+            background: #16a34a;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🪙 Tangkap Koin</h1>
+
+    <div id="score">Skor: 0</div>
+
+    <div id="game">
+        <div id="player"></div>
+        <div id="coin"></div>
+    </div>
+
+    <button onclick="restartGame()">Mulai Ulang</button>
+
+    <script>
+        const player = document.getElementById("player");
+        const coin = document.getElementById("coin");
+        const scoreText = document.getElementById("score");
+
+        let playerX = 170;
+        let coinX = 100;
+        let coinY = -30;
+        let score = 0;
+        let gameOver = false;
+
+        document.addEventListener("keydown", function(event) {
+
+            if (event.key === "ArrowLeft") {
+                playerX -= 25;
+            }
+
+            if (event.key === "ArrowRight") {
+                playerX += 25;
+            }
+
+            // Batas pemain
+            if (playerX < 0) {
+                playerX = 0;
+            }
+
+            if (playerX > 340) {
+                playerX = 340;
+            }
+
+            player.style.left = playerX + "px";
+        });
+
+        function spawnCoin() {
+            coinX = Math.random() * 370;
+            coinY = -30;
+
+            coin.style.left = coinX + "px";
+            coin.style.top = coinY + "px";
+        }
+
+        function gameLoop() {
+
+            if (gameOver) return;
+
+            coinY += 5;
+            coin.style.top = coinY + "px";
+
+            // Deteksi tabrakan
+            if (
+                coinY + 30 >= 550 &&
+                coinX + 30 >= playerX &&
+                coinX <= playerX + 60
+            ) {
+                score++;
+                scoreText.textContent = "Skor: " + score;
+
+                spawnCoin();
+            }
+
+            // Jika koin jatuh
+            if (coinY > 600) {
+                alert("Game Over!\nSkor kamu: " + score);
+                gameOver = true;
+                return;
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function restartGame() {
+            playerX = 170;
+            score = 0;
+            gameOver = false;
+
+            player.style.left = playerX + "px";
+            scoreText.textContent = "Skor: 0";
+
+            spawnCoin();
+            gameLoop();
+        }
+
+        // Mulai game
+        spawnCoin();
+        gameLoop();
+    </script>
+
+</body>
+</html>
